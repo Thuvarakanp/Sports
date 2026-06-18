@@ -1,26 +1,20 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('admin_token'));
-  const [admin, setAdmin] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  const [token, setToken] = useState(() => localStorage.getItem('admin_token'));
+  const [admin, setAdmin] = useState(() => {
+    const stored = localStorage.getItem('admin_user');
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  useEffect(() => {
-    if (token) {
-      setIsAuthenticated(true);
-      const stored = localStorage.getItem('admin_user');
-      if (stored) {
-        setAdmin(JSON.parse(stored));
-      }
-    } else {
-      setIsAuthenticated(false);
-      setAdmin(null);
-    }
-  }, [token]);
+  // Derive from token in the same render so it's never a step behind — using
+  // separate state updated via useEffect caused a redirect bounce right after
+  // login (ProtectedRoute saw a stale `false`), forcing a second login.
+  const isAuthenticated = !!token;
 
   const login = (newToken, adminData) => {
     localStorage.setItem('admin_token', newToken);
