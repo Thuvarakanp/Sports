@@ -35,7 +35,8 @@ sports-meet/
    > The `service_role` key bypasses Row Level Security and is used only by the
    > server-side API. Never expose it in the browser or commit it.
 
-**Default admin login:** `admin` / `admin123` — change this after first login.
+**Admin login:** username `admin`. Set a strong password and keep it out of this
+file — the repository is public, so never document a real, working credential here.
 
 ## 2. Local Development
 
